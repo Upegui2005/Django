@@ -1,0 +1,22 @@
+dibujo = input("¿Que quieres dibujar?:")
+
+if dibujo == "Cuadrado":
+    print("** * * * * * *")
+    print("*            *")
+    print("*            *")
+    print("*            *")
+    print("*            *")
+    print("*            *")
+    print("*            *")
+    print("* * * * * * **") 
+elif dibujo == "Triangulo":
+    print(" *")
+    print("*  *")
+    print("*    *")
+    print("*      *")
+    print("*       *")
+    print("*         *")
+    print("*           *")
+    print("*             *")
+    print("*               *")
+    print("* * * * * * * * * ")
