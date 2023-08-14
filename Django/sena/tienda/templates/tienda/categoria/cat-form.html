@@ -1,0 +1,18 @@
+{% extends 'tienda/base.html' %}
+
+{% load static %}
+
+{% block titul %} Crear Categoria {% endblock %}
+
+{% block contenedor %}
+
+  <form method="post" action="{% url 'tienda:categorias_guardar' %}">
+    {% csrf_token %}
+    <label class="form-control">Nombre:</label>
+    <input type="text" name="nombre" class="form-control"><br>
+    <label class="form-control">Descripcion:</label>
+    <textarea name="descripcion" class="form-control"></textarea><br>
+    <button type="submit">Crear</button>
+  </form>
+
+{% endblock %}

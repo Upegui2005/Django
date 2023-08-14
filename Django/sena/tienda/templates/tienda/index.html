@@ -1,21 +1,14 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Tienda SENA</title>
-    <link rel="stylesheet" href="{% static 'tienda/css/styles.css' %}">
-</head>
-<body>
-    <h1>Tienda SENA</h1>
-    <p>Los mejores productos para la venta!!!</p>
-    <img src="{% static 'tienda/img/juegos.jpg' %}" width="20%">
+{% extends 'tienda/base.html' %}
 
-    <!-- JS include here -->
-    <script src="{% static 'tienda/js/library.js' %}"></script>
-    <!-- fin - JS include -->
-</body>
-</html>
+{% load static %}
+
+{% block titul %} Inicio {% endblock %}
+
+{% block contenedor %}
+
+<h1>Tienda SENA</h1>
+<p>Los mejores productos para la venta!!!</p>
+<img src="{% static 'tienda/img/juegos.jpg' %}" width="20%">
+<button class="primary-button">Hola</button>
+
+{% endblock %}

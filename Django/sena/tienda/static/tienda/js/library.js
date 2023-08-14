@@ -1,3 +1,4 @@
+/*
 nombre = prompt("Digite su nombre: ")
 edad = parseInt(prompt("Digite su edad: "))
 
@@ -10,3 +11,4 @@ else{
 }
 
 console.log("Terminamos...")
+*/
