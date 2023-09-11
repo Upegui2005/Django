@@ -41,16 +41,20 @@
             </div>
         </div>
     </nav>
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
     {% block contenedor %}
+
     {% endblock %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
+                <div>{{ message }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+    
+        {% endfor %}
+    {% endif %}
 
     <footer>
         Copyright - Colombia 2023

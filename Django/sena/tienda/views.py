@@ -16,7 +16,7 @@ def index(request):
 
 
 def categorias(request):
-    result = Categoria.objects.all
+    result = Categoria.objects.all()
     context = {"data": result}
     return render(request, "tienda/categoria/listar.html", context)
 
@@ -31,18 +31,25 @@ def categorias_guardar(request):
         desc = request.POST.get("descripcion")
         # insert into categoria values (null, nomb, desc)
         try:
-            q = Categoria(
+            cat = Categoria(
                 nombre=nomb,
                 descripcion=desc
             )
-            q.save()
+            cat.save()
             messages.success(request, "Los datos fueron guardados correctamente")
         except Exception as e:
-            messages.warning(request, f"Error {e}")
+            messages.error(request, f"Error {e}")
 
-            return HttpResponseRedirect(reverse("tienda:listar_categorias", args=()))
+        return HttpResponseRedirect(reverse("tienda:listar_categorias", args=()))
     else:
-        return HttpResponse("No se enviaron datos...")
+        messages.error(request, "No se enviaron datos...")
+        return HttpResponseRedirect(reverse("tienda:form_cat", args=()))
+
+
+def categorias_editar_formulario(request, id):
+    q = Categoria.objects.get(pk=id)
+    contexto = {"id": id, "data": q}
+    return render(request, "tienda/categoria/cat-form.html", contexto)
 
 
 def login():

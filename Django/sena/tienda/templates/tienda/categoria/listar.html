@@ -21,7 +21,7 @@
                 <td>{{i.nombre}} </td>
                 <td>{{i.descripcion}}</td>
                 <td>
-                    <button class="btn btn-info">Editar</button>
+                    <a href="{% url 'tienda:form_edit_cat' i.id %}" class="btn btn-info">Editar</a>
                     <button class="btn btn-danger">Eliminar</button>
                 </td>
             </tr>
