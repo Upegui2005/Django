@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'citas',
     'tienda',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -111,7 +112,7 @@ TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

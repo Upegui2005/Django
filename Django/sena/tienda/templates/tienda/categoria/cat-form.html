@@ -14,14 +14,13 @@
     <label class="form-control">Nombre:</label>
     <input type="text" name="nombre" class="form-control" value="{{ data.nombre }}"><br>
     <label class="form-control">Descripcion:</label>
-    <textarea name="descripcion" class="form-control">{{ data.descripcion }}</textarea><br>
-    <button type="submit" class="btn btn-primary">
-      {% if id %}
-        Actualizar
-      {% else %}
-        Crear
-      {% endif %}
-    </button>
+    <textarea name="descripcion" class="form-control">{{ data.descripcion }}</textarea>
+    <br>
+    {% if id %}
+      <button type="submit" class="btn btn-primary">Actualizar</button>
+    {% else %}
+        <button type="submit" class="btn btn-primary">Crear</button>
+    {% endif %}
   </form>
 
 {% endblock %}

@@ -29,13 +29,22 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'tienda:listar_categorias' %}">Listar Categorias</a>
+                        <a class="nav-link" href="{% url 'tienda:listar_categorias' %}">Categorias</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Productos
+                      </a>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'tienda:productos' %}">Listar</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Vender</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Revisar inventario</a></li>
+                      </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'tienda:logout' %}">Logout</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                        <a class="nav-link" href="{% url 'tienda:logout' %}">Pricing</a>
                     </li>
                 </ul>
             </div>
