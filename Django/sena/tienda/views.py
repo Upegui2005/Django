@@ -5,10 +5,35 @@ from django.urls import reverse
 
 from django.contrib import messages
 
-from .models import Categoria, Producto
+from .models import *
 
 
 # Create your views here.
+
+
+def login(request):
+    if request.method == "POST":
+        userName = Usuarios.objects.POST.get("userName")
+        password = Usuarios.objects.POST.get("password")
+        try:
+            q = Usuarios.objects.get(userName=userName, password=password)
+            messages.success(request, "Bienvenido!!")
+            datos = {
+                "rol": q.rol,
+                "nombre": f"{q.nombre} {q.apellido}",
+                "foto": q.foto.url,
+                "id": q.id
+            }
+            request.session["sesion"] = datos
+        except Usuarios.DoesNotExist:
+            messages.error(request, "Usuario o contraseña no validos")
+            return render(request, "tienda/login.html")
+    else:
+        return render(request, "tienda/login.html")
+
+
+def logout(request):
+    pass
 
 
 def index(request):
@@ -50,14 +75,6 @@ def categorias_editar_formulario(request, id):
     q = Categoria.objects.get(pk=id)
     contexto = {"id": id, "data": q}
     return render(request, "tienda/categoria/cat-form.html", contexto)
-
-
-def login():
-    return HttpResponse("Login")
-
-
-def logout(request):
-    return render(request, "tienda/logout.html")
 
 
 def categoria_eliminar(request):

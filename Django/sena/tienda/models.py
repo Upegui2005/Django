@@ -20,3 +20,20 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"{self.id} ----- {self.nombre} ----- {self.precio}"
+
+
+class Usuarios(models.Model):
+    ROLES = (
+        (1, 'Administrador'),
+        (2, 'WebMaster'),
+        (3, 'Usuario'),
+    )
+    foto = models.ImageField(null=True, blank=True, default='fotos/default.png', upload_to='fotos')
+    nombre = models.CharField(max_length=50)
+    apellido = models.CharField(max_length=50)
+    userName = models.CharField(max_length=50, unique=True)
+    password = models.CharField(max_length=50)
+    rol = models.IntegerField(choices=ROLES, default=3)
+
+    def __int__(self):
+        return f"{self.userName}"
