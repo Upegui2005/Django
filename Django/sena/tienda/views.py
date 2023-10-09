@@ -13,37 +13,56 @@ from .models import *
 
 def login(request):
     if request.method == "POST":
-        userName = Usuarios.objects.POST.get("userName")
-        password = Usuarios.objects.POST.get("password")
+        userName = request.POST.get("userName")
+        password = request.POST.get("password")
         try:
             q = Usuarios.objects.get(userName=userName, password=password)
             messages.success(request, "Bienvenido!!")
             datos = {
                 "rol": q.rol,
+                "nombre_rol": q.get_rol_display(),
                 "nombre": f"{q.nombre} {q.apellido}",
-                "foto": q.foto.url,
+                "foto": q.foto.url if q.foto else "media/fotos/default.png",
                 "id": q.id
             }
-            request.session["sesion"] = datos
+            request.session["logueo"] = datos
+            return HttpResponseRedirect(reverse("tienda:index"))
+
         except Usuarios.DoesNotExist:
             messages.error(request, "Usuario o contraseña no validos")
             return render(request, "tienda/login.html")
     else:
-        return render(request, "tienda/login.html")
+        if request.session.get("logueo", False):
+            return HttpResponseRedirect(reverse("tienda:index"))
+        else:
+            return render(request, "tienda/login.html")
 
 
 def logout(request):
-    pass
+    try:
+        del request.session["logueo"]
+        messages.success(request, "Sesion cerrada correctamente")
+    except Exception as e:
+        messages.error(request, f"Error: {e}")
+    return HttpResponseRedirect(reverse("tienda:login"))
 
 
 def index(request):
-    return render(request, "tienda/index.html")
+    if request.session.get("logueo", False):
+        return render(request, "tienda/index.html")
+    else:
+        return HttpResponseRedirect(reverse("tienda:login"))
 
 
 def categorias(request):
-    result = Categoria.objects.all()
-    context = {"data": result}
-    return render(request, "tienda/categoria/listar.html", context)
+    sesion = request.session.get("logueo", False)
+    if sesion["nombre_rol"] != "Usuario":
+        result = Categoria.objects.all()
+        context = {"data": result}
+        return render(request, "tienda/categoria/listar.html", context)
+    else:
+        messages.warning(request, "Te crees hacker e intentas eso, sos un pequeñin")
+        return HttpResponseRedirect(reverse("tienda:index"))
 
 
 def categorias_crear_formulario(request):

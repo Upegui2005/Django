@@ -21,6 +21,16 @@
 
     {% endblock %}
 
+    {% if messages %}
+        {% for message in messages %}
+
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
+                <div>{{ message }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <!-- JS include here -->
     <script src="{% static 'tienda/js/library.js' %}"></script>
     <script src="{% static 'tienda/js/bootstrap.bundle.min.js' %}"></script>
