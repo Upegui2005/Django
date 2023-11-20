@@ -6,11 +6,17 @@ from .models import *
 
 
 class ProductoAdmin(admin.ModelAdmin):
-    fields = ["categoria", "nombre", "precio", "fecha_compra"]
-    list_display = ["id", "categoria", "nombre", "precio", "fecha_compra"]
+    fields = ["categoria", "nombre", "precio", "fecha_compra", "stock", "foto"]
+    list_display = ["id", "categoria", "nombre", "precio", "fecha_compra", "stock", "verfoto"]
     search_fields = ["nombre", "categoria__descripcion", "categoria__nombre"]
     list_filter = ["categoria", "fecha_compra"]
-    list_editable = ["nombre"]
+    # list_editable = ["nombre"]
+
+    def verfoto(self, obj):
+        try:
+            return mark_safe(f"<img src='{obj.foto.url}' width='10%'>")
+        except Exception as e:
+            return f"Error, el archivo fue eliminado."
 
 
 class CategoriaAdmin(admin.ModelAdmin):

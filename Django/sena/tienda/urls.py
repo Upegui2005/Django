@@ -19,4 +19,7 @@ urlpatterns = [
     path("productos_guardar", views.productos_guardar, name="productos_guardar"),
     path("productos_eliminar/<int:id>/", views.productos_eliminar, name="productos_eliminar"),
     path("productos_editar/<int:id>/", views.productos_editar, name="productos_editar"),
+    path("cambiar_clave/", views.cambiar_clave, name="cambiar_clave"),
+    path("guardar_clave/", views.guardar_clave, name="guardar_clave"),
+    path("perfil/", views.ver_perfil, name="perfil")
 ]

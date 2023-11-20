@@ -24,7 +24,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{% url 'tienda:index' %}">Home</a>
                     </li>
@@ -52,6 +52,30 @@
                         <a href="{% url 'tienda:listar_categorias' %}" class="nav-link {% if request.session.logueo.nombre_rol == "Usuario" %} disabled {% endif %}" aria-disabled="true">Categorias(copia)</a>
                     </li>
                 </ul>
+                <div class="navbar-text">
+                    {% if request.session.logueo %}
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                Bienvenido, {{ request.session.logueo.nombre }} ({{ request.session.logueo.nombre_rol }})
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'tienda:perfil' %}">Perfil</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="{% url 'tienda:cambiar_clave' %}">Cambiar Contraseña</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li><a class="dropdown-item" href="{% url 'tienda:logout' %}">Cerrar sesión</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
@@ -70,7 +94,7 @@
         {% endfor %}
     {% endif %}
 
-    <footer>
+    <footer class="fixed-bottom">
         Copyright - Colombia 2023
     </footer>
 

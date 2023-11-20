@@ -7,17 +7,55 @@
 {% block contenedor %}
 
     <h1>Tienda SENA</h1>
-    <p>Los mejores productos para la venta!!!</p>
-    <img src="{% static 'tienda/img/juegos.jpg' %}" width="20%">
-    <br>
-    {% if request.session.logueo %}
-        Bienvenido {{ request.session.logueo.nombre }} !!<br>
-        Su rol es: {{ request.session.logueo.nombre_rol }}<br>
-        Foto: <img src="{{ request.session.logueo.foto }}" width='5%'><br>
-        id: {{ request.session.logueo.id }}<br>
-        <a href="{% url 'tienda:logout' %}"><button class="btn btn-outline-danger">Cerrar Sesion</button></a>
-    {% else %}
-        No hay sesion abierta !!!
-    {% endif %}
+    <div class="container text-center">
+        <div class="row align-items-start">
+            <div class="col col-3">
+                <div class="list-group">
+                    <a href="{% url 'tienda:index' %}?id=0" class="list-group-item list-group-item-action {% if request.session.submenu == 0 %} active {% endif %}" aria-current="true">
+                        Todos
+                    </a>
+                    {% for c in categorias %}
+                        <a href="{% url 'tienda:index' %}?id={{c.id }}" class="list-group-item list-group-item-action {% if request.session.submenu == c.id %}active{% endif %}">{{ c.nombre }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col col-9">
+                <div class="card">
+                    <h5 class="card-header">Categoría....</h5>
+                    <div class="card-body">
+                        {% for p in productos %}
+                            {% if forloop.first %}
+                                <div class="row">
+                            {% endif %}
+                                    <div class="card me-2 ms-3 mb-2" style="width: 18rem; float:left;">
+                                      <img src="{{ p.foto.url }}" class="card-img-top" alt="...">
+                                      <div class="card-body">
+                                        <h5 class="card-title">{{ p.nombre }} (${{ p.precio }})</h5>
+                                        <p class="card-text text-sm text-muted">
+                                            <figcaption class="blockquote-footer mt-1">
+                                                <cite>Categoria: {{ p.categoria.nombre }}</cite>
+                                            </figcaption>
+                                        </p>
+                                        <form action="#" method="post">
+                                            {% csrf_token %}
+                                            <input type="number" min="1" max="{{ p.stock }}" value="1">
+                                            <a href="#" class="btn btn-outline-secondary">Add Carrito</a>
+                                        </form>
+                                      </div>
+                                    </div>
+                            {% if forloop.counter|divisibleby:3 %}
+                                </div>
+                                <div class="row">
+                            {% endif %}
+                            {% if forloop.last %}
+                                </div>
+                            {% endif %}
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

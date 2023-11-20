@@ -49,7 +49,17 @@ def logout(request):
 
 def index(request):
     if request.session.get("logueo", False):
-        return render(request, "tienda/index.html")
+        c = Categoria.objects.all()
+
+        filtro_categoria = request.GET.get("id")
+        if filtro_categoria != None and filtro_categoria != '0':
+            p = Producto.objects.filter(categoria_id=filtro_categoria)
+            request.session["submenu"] = int(filtro_categoria)
+        else:
+            p = Producto.objects.all()
+            request.session["submnenu"] = 0
+        contexto = {"categorias": c, "productos": p}
+        return render(request, "tienda/index.html", contexto)
     else:
         return HttpResponseRedirect(reverse("tienda:login"))
 
@@ -167,3 +177,38 @@ def productos_editar(request, id):
     query = Categoria.objects.all()
     contexto = {"id": id, "data": q, "categorias": query}
     return render(request, "tienda/productos/form_pro.html", contexto)
+
+
+def cambiar_clave(request):
+    return render(request, "tienda/usuarios/cambio_clave.html")
+
+
+def guardar_clave(request):
+    usuario = request.session.get("logueo", False)
+    if usuario:
+        if request.method == "POST":
+            actual = request.POST.get("actual")
+            clave1 = request.POST.get("clave1")
+            clave2 = request.POST.get("clave2")
+            try:
+                q = Usuarios.objects.get(pk=usuario["id"], password=actual)
+                if clave1 == clave2:
+                    q.password = clave1
+                    q.save()
+                    messages.success(request, "Contraseña cambiada correctamente")
+                    return HttpResponseRedirect(reverse("tienda:cambiar_clave"))
+                else:
+                    messages.warning(request, "Nuevas contraseñas no coinciden")
+                    return HttpResponseRedirect(reverse("tienda:cambiar_clave", kwargs={'actual': actual}))
+            except Exception as e:
+                messages.warning(request, "Contraseña no valida...")
+                return HttpResponseRedirect(reverse("tienda:cambiar_clave"))
+    else:
+        return HttpResponseRedirect(reverse("tienda:logueo"))
+
+
+def ver_perfil(request):
+    usuario = request.session.get("logueo", False)
+    q = Usuarios.objects.get(pk=usuario["id"])
+    contexto = {"data": q}
+    return render(request, "tienda/usuarios/perfil.html", contexto)

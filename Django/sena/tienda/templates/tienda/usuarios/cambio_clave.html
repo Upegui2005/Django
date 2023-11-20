@@ -1,0 +1,41 @@
+{% extends 'tienda/base.html' %}
+
+{% load static %}
+
+{% block titul %} Cambiar Clave {% endblock %}
+
+{% block contenedor %}
+    <form action="{% url 'tienda:guardar_clave' %}" method="post">
+        {% csrf_token %}
+        <div class="container w-25 pt-3 mt-2 border">
+            <div class="row g-3 align-items-center pb-2">
+              <div class="col-auto">
+                <label for="inputPassword6" class="col-form-label">Contraseña actual:</label>
+              </div>
+              <div class="col-auto">
+                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" name="actual" value="{{ actual }}"/>
+              </div>
+            </div>
+            <div class="row g-3 align-items-center pb-2">
+              <div class="col-auto">
+                <label for="inputPassword7" class="col-form-label">Nueva Contraseña:</label>
+              </div>
+              <div class="col-auto">
+                <input type="password" id="inputPassword7" class="form-control" aria-describedby="passwordHelpInline" name="clave1">
+              </div>
+            </div>
+            <div class="row g-3 align-items-center">
+              <div class="col-auto">
+                <label for="inputPassword8" class="col-form-label">Nueva Contraseña:</label>
+              </div>
+              <div class="col-auto">
+                <input type="password" id="inputPassword8" class="form-control" aria-describedby="passwordHelpInline" name="clave2">
+              </div>
+            </div>
+            <hr>
+            <div class="pb-2">
+                <button class="btn btn-outline-success">Enviar</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

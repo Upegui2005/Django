@@ -1,0 +1,25 @@
+{% extends 'tienda/base.html' %}
+
+{% load static %}
+
+{% block titul %} Cambiar Clave {% endblock %}
+
+{% block contenedor %}
+
+  <div class="card mx-auto mt-2" style="max-width: 540px;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="{{ data.foto.url }}" class="img-fluid rounded-start" alt="...">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title mb-3">{{ request.session.logueo.nombre_rol }}</h5>
+          <p class="card-text mb-3">
+            {{ request.session.logueo.nombre }}
+          <p class="card-text"><small class="text-body-secondary">Nombre Usuario: {{ data.userName }}</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

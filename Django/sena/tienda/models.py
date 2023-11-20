@@ -17,6 +17,8 @@ class Producto(models.Model):
     precio = models.IntegerField()
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
     fecha_compra = models.DateField()
+    stock = models.IntegerField(default=1)
+    foto = models.ImageField(null=True, blank=True, default='fotos_productos/default.png', upload_to='fotos_productos')
 
     def __str__(self):
         return f"{self.id} ----- {self.nombre} ----- {self.precio}"
@@ -35,5 +37,5 @@ class Usuarios(models.Model):
     password = models.CharField(max_length=50)
     rol = models.IntegerField(choices=ROLES, default=3)
 
-    def __int__(self):
+    def __str__(self):
         return f"{self.userName}"
