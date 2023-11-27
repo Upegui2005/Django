@@ -1,6 +1,6 @@
 import requests
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from django.contrib import messages
@@ -41,6 +41,7 @@ def login(request):
 def logout(request):
     try:
         del request.session["logueo"]
+        del request.session["carrito"]
         messages.success(request, "Sesion cerrada correctamente")
     except Exception as e:
         messages.error(request, f"Error: {e}")
@@ -51,13 +52,16 @@ def index(request):
     if request.session.get("logueo", False):
         c = Categoria.objects.all()
 
+        # Detectar si viene paramétro id categoría para filtrar o no...
         filtro_categoria = request.GET.get("id")
+
         if filtro_categoria != None and filtro_categoria != '0':
             p = Producto.objects.filter(categoria_id=filtro_categoria)
             request.session["submenu"] = int(filtro_categoria)
         else:
             p = Producto.objects.all()
-            request.session["submnenu"] = 0
+            request.session["submenu"] = 0
+
         contexto = {"categorias": c, "productos": p}
         return render(request, "tienda/index.html", contexto)
     else:
@@ -212,3 +216,48 @@ def ver_perfil(request):
     q = Usuarios.objects.get(pk=usuario["id"])
     contexto = {"data": q}
     return render(request, "tienda/usuarios/perfil.html", contexto)
+
+
+def carrito_agregar(request):
+    if request.method == "POST":
+        id_producto = request.POST.get("id")
+        cantidad = int(request.POST.get("cantidad"))
+
+        if not request.session.get("carrito", False):
+            request.session["carrito"] = []
+
+        carrito = request.session.get("carrito", False)
+
+        encontrado = False
+        for p in carrito:
+            if p["id"] == id_producto:
+                encontrado = True
+                p["cantidad"] += cantidad
+                messages.success(request, "Producto ya en carrito, se incremeto la cantidad!")
+                break
+
+        if not encontrado:
+            carrito.append({"id": id_producto, "cantidad": cantidad})
+            messages.success(request, "Producto agregado")
+
+        request.session["carrito"] = carrito
+        print(carrito)
+
+    else:
+        messages.warning(request, "No se enviaron datos...")
+    return redirect("tienda:index")
+
+
+def carrito_listar(request):
+    carrito = request.session.get("carrito", False)
+
+    if carrito:
+        for p in carrito:
+            query = Producto.objects.get(pk=p["id"])
+            p["nombre"] = query.nombre
+            p["precio"] = query.precio
+            p["foto"] = query.foto.url
+
+    contexto = {"datos": carrito}
+
+    return render(request, "tienda/carrito/listar_carrito.html", contexto)

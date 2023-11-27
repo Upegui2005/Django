@@ -1,14 +1,14 @@
-/*
-nombre = prompt("Digite su nombre: ")
-edad = parseInt(prompt("Digite su edad: "))
-
-if (edad > 18 || edad == 18){
-    alert("Bienvenido a nuestra Tienda " + nombre+ " !!")
+function ver_carrito(url_django){
+    $.ajax({
+        url: url_django
+    })
+    .fail(function( result ) {
+        alert("Error: " + result)
+    })
+    .done(function( result ) {
+        cuerpo = $('#respuesta_carrito')
+        cuerpo.html(result)
+        const myOffcanvas = $('#offcanvasRight');
+        myOffcanvas.offcanvas('toggle');
+    });
 }
-
-else{
-    alert("Lo siento, no puede comprar...")
-}
-
-console.log("Terminamos...")
-*/

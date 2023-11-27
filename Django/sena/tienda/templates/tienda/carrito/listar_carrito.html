@@ -1,0 +1,22 @@
+{% if datos %}
+    {% for p in datos %}
+        <div class="card mb-3 ms-5" style="width: 18rem;">
+            <div class="card-header">
+                <h3 class="card-text">{{ p.nombre }}</h3>
+            </div>
+            <img src="{{ p.foto }}" class="card-img-top" alt="">
+            <div class="card-body">
+                <p class="card-text">Cantidad: {{ p.cantidad }}</p>
+                <p class="card-text">Precio: {{ p.precio }}</p>
+                {% if p.cantidad > 1 %}
+                    <p class="card-text">Subtotal: {{subtotal}} </p>
+                {% else %}
+                    <p class="card-text">Subtotal: {{ p.precio }}</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Carrito Vacio</p>
+{% endif %}
+
