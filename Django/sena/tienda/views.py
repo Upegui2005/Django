@@ -26,6 +26,8 @@ def login(request):
                 "id": q.id
             }
             request.session["logueo"] = datos
+            request.session["carrito"] = []
+            request.session["cantidad_productos"] = 0
             return HttpResponseRedirect(reverse("tienda:index"))
 
         except Usuarios.DoesNotExist:
@@ -42,6 +44,7 @@ def logout(request):
     try:
         del request.session["logueo"]
         del request.session["carrito"]
+        del request.session["cantidad_productos"]
         messages.success(request, "Sesion cerrada correctamente")
     except Exception as e:
         messages.error(request, f"Error: {e}")
@@ -225,22 +228,31 @@ def carrito_agregar(request):
 
         if not request.session.get("carrito", False):
             request.session["carrito"] = []
+            request.session["cantidad_productos"] = 0
 
         carrito = request.session.get("carrito", False)
+
+        pro = Producto.objects.get(pk=id_producto)
 
         encontrado = False
         for p in carrito:
             if p["id"] == id_producto:
                 encontrado = True
-                p["cantidad"] += cantidad
-                messages.success(request, "Producto ya en carrito, se incremeto la cantidad!")
+                if cantidad > 0 and p["cantidad"] + cantidad <= pro.stock:
+                    p["cantidad"] += cantidad
+                    messages.success(request, "Producto ya en carrito, se incremeto la cantidad!")
+                else:
+                    messages.warning(request, "La cantidad supera el Stock")
                 break
-
         if not encontrado:
-            carrito.append({"id": id_producto, "cantidad": cantidad})
-            messages.success(request, "Producto agregado")
+            if cantidad > 0 and cantidad <= pro.stock:
+                carrito.append({"id": id_producto, "cantidad": cantidad})
+                messages.success(request, "Producto agregado")
+            else:
+                messages.warning(request, "La cantidad supera el Stock")
 
         request.session["carrito"] = carrito
+        request.session["cantidad_productos"] = len(request.session["carrito"])
         print(carrito)
 
     else:
@@ -251,13 +263,44 @@ def carrito_agregar(request):
 def carrito_listar(request):
     carrito = request.session.get("carrito", False)
 
-    if carrito:
+    if carrito is not False:
+        total = 0
         for p in carrito:
             query = Producto.objects.get(pk=p["id"])
             p["nombre"] = query.nombre
             p["precio"] = query.precio
             p["foto"] = query.foto.url
+            p["subtotal"] = p["cantidad"] * query.precio
+            total += p["subtotal"]
 
-    contexto = {"datos": carrito}
+    contexto = {"datos": carrito, "total": total}
 
     return render(request, "tienda/carrito/listar_carrito.html", contexto)
+
+
+def carrito_eliminar(request, id):
+    if request.method == "GET":
+        id_producto = request.GET.get("id")
+        carrito = request.session.get("carrito", False)
+
+        if carrito:
+            if int(id) == 0:
+                carrito.clear()
+            else:
+                cont = 0
+                encontrado = False
+                for p in carrito:
+                    if int(p["id"]) == id:
+                        encontrado = True
+                        carrito.remove(p)
+                        messages.success(request, "Eliminado")
+                        break
+                    cont += 1
+            request.session["carrito"] = carrito
+            request.session["cantidad_productos"] = len(request.session["carrito"])
+            messages.warning(request, "Carrito vacido")
+        else:
+            messages.warning(request, "Carrito vacido")
+    else:
+        messages.warning(request, "No se enviaron datos")
+    return redirect("tienda:index")

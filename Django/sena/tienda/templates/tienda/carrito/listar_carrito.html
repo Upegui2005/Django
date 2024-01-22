@@ -1,21 +1,31 @@
+{% load humanize %}
 {% if datos %}
     {% for p in datos %}
-        <div class="card mb-3 ms-5" style="width: 18rem;">
-            <div class="card-header">
-                <h3 class="card-text">{{ p.nombre }}</h3>
-            </div>
-            <img src="{{ p.foto }}" class="card-img-top" alt="">
-            <div class="card-body">
-                <p class="card-text">Cantidad: {{ p.cantidad }}</p>
-                <p class="card-text">Precio: {{ p.precio }}</p>
-                {% if p.cantidad > 1 %}
-                    <p class="card-text">Subtotal: {{subtotal}} </p>
-                {% else %}
-                    <p class="card-text">Subtotal: {{ p.precio }}</p>
-                {% endif %}
-            </div>
+        <div class="card mb-3" style="max-width: 540px;">
+          <div class="row g-0">
+              <div class="col-md-4 my-auto">
+                <img src="{{ p.foto }}" class="img-fluid rounded-start" alt="">
+              </div>
+              <div class="col-md-8">
+                  <div class="card-body">
+                      <h5 class="card-title">{{ p.nombre }}</h5>
+                      <p class="card-text">
+                          <input type="hidden" name="id" value="{{ p.id }}">
+                          <input type="number" min="1" max="{{ p.stock }}" value="{{ p.cantidad }}" size="3" name="cantidades" onchange="actualizar_totales({{ p.id }}, this.value, {{ p.precio }});" onkeyup="actualizar_totales({{ p.id }}, this.value, {{ p.precio }});">
+                      </p>
+                      <p class="card-text">Precio: {{ p.precio|intcomma }}</p>
+                      <p class="card-text" id="subtotal_{{ p.id }}">Subtotal: {{ p.subtotal|intcomma }}</p>
+                      <a href="{% url 'tienda:carrito_eliminar' p.id %}" class="btn btn-outline-danger">Eliminar</a>
+                      <p class="card-text"><small class="text-body-secondary">{{ p.categoria }}</small></p>
+                  </div>
+              </div>
+          </div>
         </div>
     {% endfor %}
+    <div class="mb-3 mt-3">
+        <input type="hidden" name="precios" value="{{ total }}">
+        <h2 id="total_carrito">Total: {{ total|intcomma }}</h2>
+    </div>
 {% else %}
     <p>Carrito Vacio</p>
 {% endif %}
