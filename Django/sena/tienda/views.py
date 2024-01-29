@@ -304,3 +304,28 @@ def carrito_eliminar(request, id):
     else:
         messages.warning(request, "No se enviaron datos")
     return redirect("tienda:index")
+
+
+def carrito_actualizar(request):
+    if request.method == "GET":
+        id_producto = request.GET.get("id")
+        cantidad = int(request.GET.get("cantidad"))
+
+        carrito = request.session.get("carrito", False)
+
+        pro = Producto.objects.get(pk=id_producto)
+
+        encontrado = False
+        for p in carrito:
+            if p["id"] == id_producto:
+                encontrado = True
+                if cantidad > 0 and cantidad <= pro.stock:
+                    p["cantidad"] = cantidad
+                break
+
+        request.session["carrito"] = carrito
+        return HttpResponse(request, "Ok")
+
+    else:
+        messages.warning(request, "No se enviaron datos...")
+        return HttpResponse(request, "Error")

@@ -39,3 +39,27 @@ class Usuarios(models.Model):
 
     def __str__(self):
         return f"{self.userName}"
+
+
+class Venta(models.Model):
+    fecha_venta = models.DateField(auto_now=True)
+    usuario = models.ForeignKey(Usuarios, on_delete=models.DO_NOTHING)
+    ESTADOS = (
+        (1, 'Pendiente'),
+        (2, 'Enviado'),
+        (3, 'Rechazado'),
+    )
+    estado = models.IntegerField(choices=ESTADOS, default=1)
+
+    def __str__(self):
+        return f"{self.id} - {self.usuario}"
+
+
+class DetalleVenta(models.Model):
+    venta = models.ForeignKey(Venta, on_delete=models.DO_NOTHING)
+    producto = models.ForeignKey(Producto, on_delete=models.DO_NOTHING)
+    cantidad = models.IntegerField()
+    precio_historico = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.id} - {self.venta}"

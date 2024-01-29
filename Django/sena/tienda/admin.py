@@ -10,6 +10,7 @@ class ProductoAdmin(admin.ModelAdmin):
     list_display = ["id", "categoria", "nombre", "precio", "fecha_compra", "stock", "verfoto"]
     search_fields = ["nombre", "categoria__descripcion", "categoria__nombre"]
     list_filter = ["categoria", "fecha_compra"]
+
     # list_editable = ["nombre"]
 
     def verfoto(self, obj):
@@ -40,6 +41,19 @@ class UsuariosAdmin(admin.ModelAdmin):
             return f"Error, el archivo fue eliminado."
 
 
+class VentaAdmin(admin.ModelAdmin):
+    list_display = ["id", "fecha_venta", "usuario", "estado"]
+
+
+class DetalleVentaAdmin(admin.ModelAdmin):
+    list_display = ["venta", "producto", "cantidad", "precio_historico", "subtotal"]
+
+    def subtotal(self, obj):
+        return f"{obj.cantidad * obj.precio_historico}"
+
+
 admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Producto, ProductoAdmin)
 admin.site.register(Usuarios, UsuariosAdmin)
+admin.site.register(Venta, VentaAdmin)
+admin.site.register(DetalleVenta, DetalleVentaAdmin)

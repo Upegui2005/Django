@@ -11,7 +11,8 @@
                       <h5 class="card-title">{{ p.nombre }}</h5>
                       <p class="card-text">
                           <input type="hidden" name="id" value="{{ p.id }}">
-                          <input type="number" min="1" max="{{ p.stock }}" value="{{ p.cantidad }}" size="3" name="cantidades" onchange="actualizar_totales({{ p.id }}, this.value, {{ p.precio }});" onkeyup="actualizar_totales({{ p.id }}, this.value, {{ p.precio }});">
+                          <input type="number" min="1" max="{{ p.stock }}" value="{{ p.cantidad }}" size="3" name="cantidades" onchange="actualizar_totales({{ p.id }}, this.value, {{ p.precio }});actualizar_carrito(`{% url 'tienda:carrito_actualizar' %}`, {{ p.id }}, this.value )" onkeyup="actualizar_totales({{ p.id }}, this.value, {{ p.precio }});actualizar_carrito(`{% url 'tienda:carrito_actualizar' %}`, {{ p.id }}, this.value );">
+                          <input type="hidden" name="precios" value="{{ p.precio }}">
                       </p>
                       <p class="card-text">Precio: {{ p.precio|intcomma }}</p>
                       <p class="card-text" id="subtotal_{{ p.id }}">Subtotal: {{ p.subtotal|intcomma }}</p>
@@ -23,7 +24,6 @@
         </div>
     {% endfor %}
     <div class="mb-3 mt-3">
-        <input type="hidden" name="precios" value="{{ total }}">
         <h2 id="total_carrito">Total: {{ total|intcomma }}</h2>
     </div>
 {% else %}
