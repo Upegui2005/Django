@@ -7,6 +7,8 @@ from django.contrib import messages
 
 from .models import *
 
+from django.db import IntegrityError, transaction
+
 
 # Create your views here.
 
@@ -265,13 +267,18 @@ def carrito_listar(request):
 
     if carrito is not False:
         total = 0
-        for p in carrito:
-            query = Producto.objects.get(pk=p["id"])
-            p["nombre"] = query.nombre
-            p["precio"] = query.precio
-            p["foto"] = query.foto.url
-            p["subtotal"] = p["cantidad"] * query.precio
-            total += p["subtotal"]
+        print()
+        try:
+            for indice, p in enumerate(carrito):
+                query = Producto.objects.get(pk=p["id"])
+                p["nombre"] = query.nombre
+                p["precio"] = query.precio
+                p["foto"] = query.foto.url
+                p["subtotal"] = p["cantidad"] * query.precio
+                total += p["subtotal"]
+        except Producto.DoesNotExist:
+            carrito.pop(indice)
+            request.session["carrito"] = carrito
 
     contexto = {"datos": carrito, "total": total}
 
@@ -329,3 +336,98 @@ def carrito_actualizar(request):
     else:
         messages.warning(request, "No se enviaron datos...")
         return HttpResponse(request, "Error")
+
+
+@transaction.atomic
+def establecer_venta(request):
+    # crear encabezado de la venta
+    try:
+        logueo = request.session.get("logueo", False)
+        user = Usuarios.objects.get(pk=logueo["id"])
+
+        v = Venta(usuario=user)
+        v.save()
+
+        # Obtener ID inmediatamente
+        id_venta = Venta.objects.latest('id')
+
+        messages.success(request, f"Muchas Gracias por su compra << {id_venta} >>.")
+
+        # venta = Venta.objects.get(pk=id_venta)
+        carrito = request.session.get("carrito", False)
+        for p in carrito:
+            try:
+                p_object = Producto.objects.get(pk=p["id"])
+            except Producto.DoesNotExist:
+                messages.error(request, f"El producto {p} ya no existe")
+                raise Exception(f"No se pudo realizar la compra, el producto {p} ya no existe")
+
+            if p_object.stock >= p["cantidad"]:
+                # Asociar los productos del carrito al ID de la venta, previamente creado.
+                q = DetalleVenta(
+                    venta=id_venta,
+                    producto=p_object,
+                    cantidad=p["cantidad"],
+                    precio_historico=p_object.precio
+                )
+                q.save()
+                # Disminuir stock de productos
+                p_object.stock -= p["cantidad"]
+                p_object.save()
+            else:
+                messages.warning(request,
+                                 f"El producto {p_object} no cuenta con suficientes unidades. solo tiene {p_object.stock}")
+                raise ValueError(
+                    f"El producto {p_object} no cuenta con suficientes unidades. solo tiene {p_object.stock}")
+
+        # Vaciar carrito y redirigir al inicio.
+        carrito.clear()
+        request.session["carrito"] = carrito
+
+        messages.success(request, f"Todos los productos asociados a la venta << {id_venta} >>!!")
+
+        return redirect("tienda:index")
+        # =========== Fin transaccion si todo ok ===========
+
+    except Exception as e:
+        # *********** si Error *************
+        messages.error(request, f"Ocurrio un error, intenta de nuevo. {e}")
+        # Rollback
+        transaction.set_rollback(True)
+        return redirect("tienda:index")
+    # ====== Fin ======
+
+
+def ventas(request):
+    sesion = request.session.get("logueo", False)
+    if sesion["nombre_rol"] != "Usuario":
+        result = DetalleVenta.objects.all()
+        context = {"data": result}
+        return render(request, "tienda/ventas/listar_ventas_admin.html", context)
+    else:
+        messages.warning(request, "Te crees hacker e intentas eso, sos un pequeñin")
+        return HttpResponseRedirect(reverse("tienda:index"))
+
+
+def venta_usuario(request):
+    sesion = request.session.get("logueo", False)
+    if sesion["nombre_rol"] == "Usuario":
+        u = Usuarios.objects.get(pk=sesion['id'])
+        result = Venta.objects.filter(usuario=u)
+        context = {"data": result}
+        return render(request, "tienda/ventas/listar_ventas_usuarios.html", context)
+    else:
+        messages.warning(request, "Te crees hacker e intentas eso, sos un menor")
+        return HttpResponseRedirect(reverse("tienda:index"))
+
+
+def detalle_venta_usuarios(request, id):
+    sesion = request.session.get("logueo", False)
+    if sesion["nombre_rol"] == "Usuario":
+        v = Venta.objects.get(pk=id)
+        result = DetalleVenta.objects.filter(venta=v)
+        context = {"data": result}
+        return render(request, "tienda/ventas/listar_detalleVenta_usuarios.html", context)
+    else:
+        messages.warning(request, "Te crees hacker e intentas eso, sos un menor")
+        return HttpResponseRedirect(reverse("tienda:index"))

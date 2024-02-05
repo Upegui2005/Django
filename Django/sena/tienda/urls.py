@@ -23,9 +23,14 @@ urlpatterns = [
     path("guardar_clave/", views.guardar_clave, name="guardar_clave"),
     path("perfil/", views.ver_perfil, name="perfil"),
 
-    #Carrito de compra...
+    # Carrito de compra...
     path("carrito_agregar/", views.carrito_agregar, name="carrito_agregar"),
     path("carrito_listar/", views.carrito_listar, name="carrito_listar"),
     path("carrito_eliminar/<int:id>", views.carrito_eliminar, name="carrito_eliminar"),
-    path("carrito_actualizar", views.carrito_actualizar, name="carrito_actualizar")
+    path("carrito_actualizar", views.carrito_actualizar, name="carrito_actualizar"),
+    path("establecer_venta", views.establecer_venta, name="establecer_venta"),
+
+    path("ventas/", views.ventas, name="venta"),
+    path("ventas_usuario/", views.venta_usuario, name="venta_usuario"),
+    path("detalleVenta_usuario/<int:id>", views.detalle_venta_usuarios, name="detalleVenta_usuario")
 ]
